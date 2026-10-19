@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HD_PATTERN preview</title>
+  <link rel="stylesheet" href="HD_PATTERN.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+
+  <div class="app">
+    <div class="panel">
+      <div class="group">
+        <div class="group-title">화면 사이즈</div>
+
+        <div class="group-subtitle">화면 비율</div>
+        <div class="ratio-row">
+          <button class="ratio-btn" data-size="feed">
+            <span class="ratio-main">Instagram Feed</span>
+            <span class="ratio-caption">1080 × 1350</span>
+          </button>
+          <button class="ratio-btn" data-size="square">
+            <span class="ratio-main">Square</span>
+            <span class="ratio-caption">1080 × 1080</span>
+          </button>
+          <button class="ratio-btn" data-size="wide">
+            <span class="ratio-main">16:9</span>
+            <span class="ratio-caption">1920 × 1080</span>
+          </button>
+          <button class="ratio-btn" data-size="custom">
+            <span class="ratio-main">Custom</span>
+            <span class="ratio-caption">직접 입력</span>
+          </button>
+        </div>
+
+        <div class="group-subtitle">실제 사이즈 (px)</div>
+        <div class="size-row">
+          <div class="size-field">
+            <label for="canvasWidthInput">너비</label>
+            <input type="number" id="canvasWidthInput" min="1" step="1" value="1080">
+          </div>
+          <div class="size-field">
+            <label for="canvasHeightInput">높이</label>
+            <input type="number" id="canvasHeightInput" min="1" step="1" value="1350">
+          </div>
+        </div>
+        <div class="group-subtitle" id="size-notice" role="status" hidden></div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Preset</div>
+        <div class="choice-row" id="preset-choices">
+          <button class="choice-btn active" data-preset="base">1</button>
+          <button class="choice-btn" data-preset="cornerVanishing">2</button>
+          <button class="choice-btn" data-preset="flatDiagonal">3</button>
+          <button class="choice-btn" data-preset="verticalEdgeThird">4</button>
+          <button class="choice-btn" data-preset="horizontalFlat">5</button>
+          <button class="choice-btn" data-preset="verticalDrift">6</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">H-Direction</div>
+        <div class="choice-row" id="version-choices">
+          <button class="choice-btn" data-direction="vertical">수직형</button>
+          <button class="choice-btn" data-direction="horizontal">수평형</button>
+          <button class="choice-btn active" data-direction="diagonal">사선형</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">H-Dimension</div>
+        <div class="choice-row" id="viewpoint-choices">
+          <button class="choice-btn active" data-viewpoint="perspective">입체</button>
+          <button class="choice-btn" data-viewpoint="flat">평면</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">세부조정</div>
+
+        <div class="group-subtitle">컬러 설정</div>
+        <div class="color-grid">
+          <button class="color-swatch" data-colorway="whiteLightGreen" title="화이트 · 연그린" style="background:#FFFFFF">
+            <span class="swatch-line" style="background:#DCF5D2"></span>
+          </button>
+          <button class="color-swatch" data-colorway="whiteLightBlue" title="화이트 · 연블루" style="background:#FFFFFF">
+            <span class="swatch-line" style="background:#DCF0F5"></span>
+          </button>
+          <button class="color-swatch" data-colorway="lightGreenGreen" title="연그린 · 그린" style="background:#DCF5D2">
+            <span class="swatch-line" style="background:#00AF41"></span>
+          </button>
+          <button class="color-swatch" data-colorway="greenLightGreen" title="그린 · 연그린" style="background:#00AF41">
+            <span class="swatch-line" style="background:#73D75A"></span>
+          </button>
+          <button class="color-swatch active" data-colorway="darkGreenGreen" title="다크그린 · 그린" style="background:#00280A">
+            <span class="swatch-line" style="background:#007332"></span>
+          </button>
+          <button class="color-swatch" data-colorway="navyBlue" title="네이비 · 블루" style="background:#000A32">
+            <span class="swatch-line" style="background:#003087"></span>
+          </button>
+          <button class="color-swatch" data-colorway="blackWhite" title="블랙 · 화이트" style="background:#000000">
+            <span class="swatch-line" style="background:#FFFFFF"></span>
+          </button>
+          <button class="color-swatch" data-colorway="custom" id="custom-swatch" title="직접 입력">
+            <span class="swatch-line" id="custom-swatch-line"></span>
+            <span class="swatch-caption" id="custom-swatch-caption">직접 입력</span>
+          </button>
+        </div>
+        <div class="custom-color" id="custom-color" hidden>
+          <div class="size-field">
+            <label for="customBackgroundHex">배경</label>
+            <div class="color-input">
+              <input type="color" id="customBackgroundPicker" aria-label="배경 색 선택">
+              <input type="text" id="customBackgroundHex" maxlength="7" spellcheck="false" autocomplete="off">
+            </div>
+          </div>
+          <div class="size-field">
+            <label for="customLineHex">라인</label>
+            <div class="color-input">
+              <input type="color" id="customLinePicker" aria-label="라인 색 선택">
+              <input type="text" id="customLineHex" maxlength="7" spellcheck="false" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <div class="group-subtitle">열/행 간격</div>
+        <div class="slider-row">
+          <div class="slider-label"><span>열 간격</span><b id="v-columnGap">30px</b></div>
+          <input type="range" id="columnGap" min="10" max="30" step="1" value="30">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>행 간격</span><b id="v-rowGap">30px</b></div>
+          <input type="range" id="rowGap" min="10" max="30" step="1" value="30">
+        </div>
+
+        <div class="subtitle-row">
+          <span class="group-subtitle">가장 얇은 라인 / 두꺼운 라인 값</span>
+          <div class="subtitle-actions">
+            <button id="weight-toggle" class="switch-btn on" title="가변 두께" aria-pressed="true">
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </button>
+          </div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>가장 얇은 라인</span><b id="v-minWeight">1px</b></div>
+          <input type="range" id="minWeight" min="1" max="10" step="1" value="1">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>가장 두꺼운 라인</span><b id="v-maxWeight">10px</b></div>
+          <input type="range" id="maxWeight" min="1" max="15" step="1" value="10">
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">기준점 움직임</div>
+        <div class="choice-row" id="motion-choices">
+          <button class="choice-btn" data-motion="path">지점 경로</button>
+          <button class="choice-btn" data-motion="mouse">마우스 따라가기</button>
+        </div>
+        <div class="path-controls" id="path-controls">
+          <div class="group-subtitle" id="path-hint"></div>
+          <div class="slider-row">
+            <div class="slider-label"><span>구간 이동 시간</span><b id="v-segmentSeconds">1.5초</b></div>
+            <input type="range" id="segmentSeconds" min="0.3" max="5" step="0.1" value="1.5">
+          </div>
+          <button id="path-play" class="action-btn">경로 재생</button>
+          <div class="choice-row">
+            <button id="path-undo" class="choice-btn">마지막 지점 취소</button>
+            <button id="path-clear" class="choice-btn">모두 지우기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">다운로드</div>
+        <button id="svg-export" class="action-btn">SVG로 저장</button>
+        <button id="video-record" class="action-btn" aria-pressed="false">영상 녹화 시작</button>
+        <div class="group-subtitle" id="record-hint"></div>
+        <div class="group-subtitle" id="record-notice" role="status" hidden></div>
+        <div class="record-result" id="record-result" hidden>
+          <video id="record-video" controls loop muted playsinline></video>
+          <div class="record-meta" id="record-meta"></div>
+          <div class="choice-row">
+            <button id="record-download" class="choice-btn active">다운로드</button>
+            <button id="record-discard" class="choice-btn">버리기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-col">
+      <div class="canvas-frame">
+        <div id="canvas-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="HD_PATTERN.js"></script>
+</body>
+</html>
